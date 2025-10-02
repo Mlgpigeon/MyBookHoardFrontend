@@ -31,11 +31,13 @@ document.addEventListener("DOMContentLoaded", () => {
         showApp();
         loadBooks();
       } else {
-        loginError.textContent = result.error || "Invalid credentials";
+        const errorMsg = result.error || result.message || "Invalid credentials";
+        loginError.textContent = errorMsg;
+        console.error("Login failed:", result);
       }
     } catch (err) {
       console.error("Login error:", err);
-      loginError.textContent = "Connection error with server";
+      loginError.textContent = `Connection error: ${err.message}`;
     }
   });
 
@@ -87,8 +89,16 @@ async function loadBooks() {
     });
 
   } catch (err) {
-    container.innerHTML = '<div class="empty-message">Error loading books.</div>';
     console.error("Error loading books:", err);
+    
+    // Show detailed error in UI
+    container.innerHTML = `
+      <div class="empty-message" style="color: #e74c3c;">
+        <strong>❌ Error loading books</strong><br><br>
+        ${err.message}<br><br>
+        <small>Check the API Debug Console below for more details</small>
+      </div>
+    `;
   }
 }
 

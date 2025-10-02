@@ -11,15 +11,16 @@ function getAuthHeaders() {
 /**
  * Display API response in a debug box
  */
-function showApiResponse(response) {
+function showApiResponse(response, label = "API Response") {
   let box = document.getElementById("api-response");
   if (!box) {
     box = document.createElement("pre");
     box.id = "api-response";
-    box.style.display = "none"; // Hidden by default
     document.body.appendChild(box);
   }
-  box.textContent = JSON.stringify(response, null, 2);
+  const timestamp = new Date().toLocaleTimeString();
+  box.textContent = `[${timestamp}] ${label}:\n${JSON.stringify(response, null, 2)}`;
+  box.scrollTop = box.scrollHeight; // Auto-scroll to bottom
 }
 
 /**
@@ -29,36 +30,63 @@ function showApiResponse(response) {
  * @returns {Promise<Object>} Login response
  */
 async function login(identifier, password) {
-  const res = await fetch(`${API_URL}/auth/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ identifier, password })
-  });
+  try {
+    const res = await fetch(`${API_URL}/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ identifier, password })
+    });
 
-  const json = await res.json();
-  showApiResponse(json);
+    const json = await res.json();
+    showApiResponse({
+      status: res.status,
+      statusText: res.statusText,
+      ok: res.ok,
+      response: json
+    }, "POST /auth/login");
 
-  if (json.success && json.data && json.data.token) {
-    localStorage.setItem("jwt", json.data.token);
+    if (json.success && json.data && json.data.token) {
+      localStorage.setItem("jwt", json.data.token);
+    }
+
+    return json;
+  } catch (error) {
+    showApiResponse({
+      error: error.message,
+      stack: error.stack
+    }, "POST /auth/login ERROR");
+    throw error;
   }
-
-  return json;
 }
 
 /**
  * Logout current user
  */
 async function logout() {
-  const res = await fetch(`${API_URL}/auth/logout`, {
-    method: "POST",
-    headers: { ...getAuthHeaders() }
-  });
-  
-  const json = await res.json();
-  localStorage.removeItem("jwt");
-  showApiResponse(json);
-  
-  return json;
+  try {
+    const res = await fetch(`${API_URL}/auth/logout`, {
+      method: "POST",
+      headers: { ...getAuthHeaders() }
+    });
+    
+    const json = await res.json();
+    localStorage.removeItem("jwt");
+    showApiResponse({
+      status: res.status,
+      statusText: res.statusText,
+      ok: res.ok,
+      response: json
+    }, "POST /auth/logout");
+    
+    return json;
+  } catch (error) {
+    localStorage.removeItem("jwt");
+    showApiResponse({
+      error: error.message,
+      stack: error.stack
+    }, "POST /auth/logout ERROR");
+    throw error;
+  }
 }
 
 /**
@@ -66,14 +94,31 @@ async function logout() {
  * @returns {Promise<Array>} Array of books
  */
 async function getBooks() {
-  const res = await fetch(`${API_URL}/books`, {
-    headers: { ...getAuthHeaders() }
-  });
-  
-  const json = await res.json();
-  showApiResponse(json);
-  
-  return json.success && json.data ? json.data.books : [];
+  try {
+    const res = await fetch(`${API_URL}/books`, {
+      headers: { ...getAuthHeaders() }
+    });
+    
+    const json = await res.json();
+    showApiResponse({
+      status: res.status,
+      statusText: res.statusText,
+      ok: res.ok,
+      response: json
+    }, "GET /books");
+    
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}: ${json.error || json.message || res.statusText}`);
+    }
+    
+    return json.success && json.data ? json.data.books : [];
+  } catch (error) {
+    showApiResponse({
+      error: error.message,
+      stack: error.stack
+    }, "GET /books ERROR");
+    throw error;
+  }
 }
 
 /**
@@ -82,15 +127,28 @@ async function getBooks() {
  * @returns {Promise<boolean>} True if successful
  */
 async function deleteBook(id) {
-  const res = await fetch(`${API_URL}/books/${id}`, {
-    method: "DELETE",
-    headers: { ...getAuthHeaders() }
-  });
-  
-  const json = await res.json().catch(() => ({ success: res.ok }));
-  showApiResponse(json);
-  
-  return json.success || res.ok;
+  try {
+    const res = await fetch(`${API_URL}/books/${id}`, {
+      method: "DELETE",
+      headers: { ...getAuthHeaders() }
+    });
+    
+    const json = await res.json().catch(() => ({ success: res.ok }));
+    showApiResponse({
+      status: res.status,
+      statusText: res.statusText,
+      ok: res.ok,
+      response: json
+    }, `DELETE /books/${id}`);
+    
+    return json.success || res.ok;
+  } catch (error) {
+    showApiResponse({
+      error: error.message,
+      stack: error.stack
+    }, `DELETE /books/${id} ERROR`);
+    throw error;
+  }
 }
 
 /**
