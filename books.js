@@ -18,18 +18,28 @@ document.addEventListener("DOMContentLoaded", () => {
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
 
-    const result = await login(email, password);
+    try {
+      const result = await login(email, password);
 
-    if (result.success) {
-      loginError.textContent = "";
-      loginContainer.style.display = "none";
-      appContainer.style.display = "block";
-      loadBooks();
-    } else {
-      loginError.textContent = result.error || "Credenciales inválidas";
+      // Mostrar SIEMPRE respuesta cruda
+      showApiResponse(result);
+
+      if (result.success && result.data.token) {
+        loginError.textContent = "";
+        loginContainer.style.display = "none";
+        appContainer.style.display = "block";
+        loadBooks();
+      } else {
+        loginError.textContent = result.error || "Credenciales inválidas";
+      }
+    } catch (err) {
+      console.error("Error login:", err);
+      loginError.textContent = "Error de conexión con el servidor";
+      showApiResponse({ error: err.message });
     }
   });
 });
+
 
 // Función para cargar libros
 async function loadBooks() {
