@@ -1,10 +1,34 @@
-const API_URL = "/verify_database.php"; // tu backend
+// Libros (Books)
 
 async function getBooks() {
-  const res = await fetch(`${API_URL}?route=books`);
+  const res = await fetch(`${API_URL}/books`);
+  return res.json();
+}
+
+async function getBook(id) {
+  const res = await fetch(`${API_URL}/books/${id}`);
+  return res.json();
+}
+
+async function createBook(data) {
+  const res = await fetch(`${API_URL}/books`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  });
+  return res.json();
+}
+
+async function updateBook(id, data) {
+  const res = await fetch(`${API_URL}/books/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  });
   return res.json();
 }
 
 async function deleteBook(id) {
-  return fetch(`${API_URL}?route=books/${id}`, { method: "DELETE" });
+  const res = await fetch(`${API_URL}/books/${id}`, { method: "DELETE" });
+  return res.ok;
 }
