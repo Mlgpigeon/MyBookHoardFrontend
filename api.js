@@ -2,8 +2,10 @@
 
 async function getBooks() {
   const res = await fetch(`${API_URL}/books`);
-  return res.json();
+  const json = await res.json();
+  return json.data.books; 
 }
+
 
 async function getBook(id) {
   const res = await fetch(`${API_URL}/books/${id}`);
