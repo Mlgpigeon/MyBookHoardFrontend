@@ -1,0 +1,214 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  max-width: 900px;
+  width: 100%;
+  padding: 40px;
+}
+
+h1, h2 {
+  color: #333;
+  margin-bottom: 20px;
+}
+
+h1 {
+  font-size: 2em;
+  text-align: center;
+}
+
+h2 {
+  font-size: 1.5em;
+}
+
+/* Login Form */
+#login-container {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+#login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 1em;
+  transition: border-color 0.3s;
+}
+
+input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+button {
+  padding: 12px 24px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background: #5568d3;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+#login-error {
+  color: #e74c3c;
+  font-size: 0.9em;
+  margin-top: 10px;
+  text-align: center;
+}
+
+/* App Container */
+#app {
+  display: none;
+}
+
+#app.active {
+  display: block;
+}
+
+/* Header */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.logout-btn {
+  background: #e74c3c;
+  padding: 8px 16px;
+  font-size: 0.9em;
+}
+
+.logout-btn:hover {
+  background: #c0392b;
+}
+
+/* Book List */
+#book-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.book-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #667eea;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.book-item:hover {
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.book-info {
+  flex: 1;
+  cursor: pointer;
+}
+
+.book-title {
+  font-size: 1.1em;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.book-details {
+  font-size: 0.9em;
+  color: #666;
+}
+
+.book-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.edit-btn {
+  background: #3498db;
+  padding: 8px 16px;
+  font-size: 0.9em;
+}
+
+.edit-btn:hover {
+  background: #2980b9;
+}
+
+.delete-btn {
+  background: #e74c3c;
+  padding: 8px 16px;
+  font-size: 0.9em;
+}
+
+.delete-btn:hover {
+  background: #c0392b;
+}
+
+.empty-message {
+  text-align: center;
+  padding: 40px;
+  color: #999;
+  font-size: 1.1em;
+}
+
+/* Loading */
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #667eea;
+  font-size: 1.1em;
+}
+
+/* Debug Response (hidden by default) */
+#api-response {
+  margin-top: 30px;
+  padding: 20px;
+  background: #2c3e50;
+  color: #ecf0f1;
+  border-radius: 8px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.85em;
+  overflow-x: auto;
+  max-height: 400px;
+  overflow-y: auto;
+}
