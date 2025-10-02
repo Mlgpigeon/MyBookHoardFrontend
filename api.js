@@ -1,36 +1,55 @@
-// Libros (Books)
+const API_URL = "https://api.mybookhoard.com/api";
 
-async function getBooks() {
-  const res = await fetch(`${API_URL}/books`);
-  const json = await res.json();
-  return json.data.books; 
+// --- Helpers ---
+function getAuthHeaders() {
+  const token = localStorage.getItem("token");
+  return token ? { "Authorization": `Bearer ${token}` } : {};
 }
 
-
-async function getBook(id) {
-  const res = await fetch(`${API_URL}/books/${id}`);
-  return res.json();
+function showApiResponse(response) {
+  let box = document.getElementById("api-response");
+  if (!box) {
+    box = document.createElement("pre");
+    box.id = "api-response";
+    document.body.appendChild(box);
+  }
+  box.textContent = JSON.stringify(response, null, 2);
 }
 
-async function createBook(data) {
-  const res = await fetch(`${API_URL}/books`, {
+// --- Auth ---
+async function login(email, password) {
+  const res = await fetch(`${API_URL}/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data)
+    body: JSON.stringify({ email, password })
   });
-  return res.json();
+
+  const json = await res.json();
+  showApiResponse(json);   // 👈 aquí mostramos la respuesta de login
+
+  if (json.success && json.data.token) {
+    localStorage.setItem("token", json.data.token);
+  }
+
+  return json;
 }
 
-async function updateBook(id, data) {
-  const res = await fetch(`${API_URL}/books/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data)
+// --- Books ---
+async function getBooks() {
+  const res = await fetch(`${API_URL}/books`, {
+    headers: { ...getAuthHeaders() }
   });
-  return res.json();
+  const json = await res.json();
+  showApiResponse(json);   // 👈 mostramos la respuesta completa
+  return json.data ? json.data.books : [];
 }
 
 async function deleteBook(id) {
-  const res = await fetch(`${API_URL}/books/${id}`, { method: "DELETE" });
+  const res = await fetch(`${API_URL}/books/${id}`, {
+    method: "DELETE",
+    headers: { ...getAuthHeaders() }
+  });
+  const json = await res.json().catch(() => ({ ok: res.ok }));
+  showApiResponse(json);   // 👈 mostramos también el resultado del delete
   return res.ok;
 }
